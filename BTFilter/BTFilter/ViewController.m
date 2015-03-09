@@ -17,6 +17,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [[BTFilter shareBTFilter] keyWordWriteWithArray:@[@"啊",@"吧",@"辞",@"的",@"饿"]];
     NSString *result1 = [[BTFilter shareBTFilter] filterWithString:@"啊吧辞的饿风哈哈好"];
     NSString *result2 = [[BTFilter shareBTFilter] filterWithString:@"风哈哈好啊吧辞的饿"];
     NSLog(@"%@,%@",result1,result2);

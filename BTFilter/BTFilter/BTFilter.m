@@ -8,33 +8,87 @@
 
 #import "BTFilter.h"
 
-@implementation BTFilter{
-    NSString *_keyString;
-}
+@interface BTFilter()
+
+@property (nonatomic, copy) NSString *keyString;
+
+@end
+
+@implementation BTFilter
 
 static BTFilter *sharedBTFilter = nil;
+
+/**
+ *  单例方法
+ *
+ *  @return 实例对象
+ */
 + (BTFilter *)shareBTFilter{
-    @synchronized(self){
-        if (sharedBTFilter == nil) {
-            sharedBTFilter = [[self alloc]init];
-        }
-        return sharedBTFilter;
-    }
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedBTFilter = [[self alloc] init];
+    });
+    return sharedBTFilter;
 }
--(instancetype)init{
+
+/**
+ *  初始化方法
+ *
+ *  @return 实例对象
+ */
+- (instancetype)init{
     self = [super init];
     if (self) {
-        //获取过滤关键字
-        NSString *dataPath = [[NSBundle mainBundle] pathForResource:@"Property List" ofType:@"plist"];
-        NSArray *array = [[NSDictionary dictionaryWithContentsOfFile:dataPath] allValues];
-        _keyString = [array componentsJoinedByString:@""];
+        [self keyWordRead];
     }
     return self;
 }
+
+/**
+ *  字符过滤方法
+ *
+ *  @param string 被过滤字符
+ *
+ *  @return 过滤后字符
+ */
 - (NSString *)filterWithString:(NSString *)string{
-    //字符过滤
-    NSCharacterSet *cs = [NSCharacterSet characterSetWithCharactersInString:_keyString];
+    //判断是否存在关键字
+    if (!self.keyString) {
+        return string;
+    }
+    
+    //字符关键字过滤
+    NSCharacterSet *cs = [NSCharacterSet characterSetWithCharactersInString:self.keyString];
     NSString *filter = [[string componentsSeparatedByCharactersInSet:cs] componentsJoinedByString:@"*"];
     return filter;
+}
+
+/**
+ *  读取关键字
+ */
+- (void)keyWordRead{
+    NSArray *array = [NSArray arrayWithContentsOfFile:[self documentPath]];
+    self.keyString = [array componentsJoinedByString:@""];
+}
+
+/**
+ *  写入关键字
+ *
+ *  @param array 关键字数组
+ */
+- (void)keyWordWriteWithArray:(NSArray *)array{
+    [array writeToFile:[self documentPath] atomically:YES];
+    self.keyString = [array componentsJoinedByString:@""];
+}
+
+/**
+ *  获取用户路径
+ *
+ *  @return 用户路径
+ */
+- (NSString *)documentPath{
+    NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    documentPath = [documentPath stringByAppendingPathComponent:@"keyword"];
+    return documentPath;
 }
 @end
