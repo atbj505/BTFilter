@@ -9,7 +9,7 @@
 #import "BTFilter.h"
 
 @implementation BTFilter{
-    NSString *_filePath;
+    NSString *_keyString;
 }
 
 static BTFilter *sharedBTFilter = nil;
@@ -24,16 +24,16 @@ static BTFilter *sharedBTFilter = nil;
 -(instancetype)init{
     self = [super init];
     if (self) {
-        //获取解析plist
+        //获取过滤关键字
         NSString *dataPath = [[NSBundle mainBundle] pathForResource:@"Property List" ofType:@"plist"];
         NSArray *array = [[NSDictionary dictionaryWithContentsOfFile:dataPath] allValues];
-        _filePath = [array componentsJoinedByString:@""];
+        _keyString = [array componentsJoinedByString:@""];
     }
     return self;
 }
 - (NSString *)filterWithString:(NSString *)string{
     //字符过滤
-    NSCharacterSet *cs = [NSCharacterSet characterSetWithCharactersInString:_filePath];
+    NSCharacterSet *cs = [NSCharacterSet characterSetWithCharactersInString:_keyString];
     NSString *filter = [[string componentsSeparatedByCharactersInSet:cs] componentsJoinedByString:@"*"];
     return filter;
 }
