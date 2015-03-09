@@ -1,0 +1,42 @@
+//
+//  PrefixHeader.pch
+//  BTFilter
+//
+//  Created by Robert on 15/3/9.
+//  Copyright (c) 2015年 NationSky. All rights reserved.
+//
+
+#ifndef BTFilter_PrefixHeader_pch
+#define BTFilter_PrefixHeader_pch
+
+#ifdef __OBJC__
+
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+
+//* 单例interface
+#define CLASS_SINGLETON_INTERFACE(classname)                            \
+\
++ (classname *)share##classname;
+
+
+//* 单例implementation
+#define CLASS_SINGLETON_IMPLEMENTATION(classname)                       \
+static classname* shared##classname = nil;                              \
+\
++ (classname *)share##classname                                         \
+{                                                                       \
+@synchronized(self)                                                     \
+{                                                                       \
+if (shared##classname == nil)                                           \
+{                                                                       \
+shared##classname = [[self alloc] init];                                \
+}                                                                       \
+}                                                                       \
+return shared##classname;                                               \
+}                                                                       \
+
+
+
+#endif
+#endif
